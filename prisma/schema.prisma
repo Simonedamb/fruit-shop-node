@@ -15,20 +15,21 @@ model Fruits {
     name                    String       @db.VarChar(255)
     genus                   String?      @db.VarChar(255)
     image                   String
-    price                   Decimal
+    price                   String
     family                  String?       @db.VarChar(255)
     order                   String
-    createdAt               DateTime       @default(now())
-    createdBy               String?        @db.VarChar(255)
-    updatedAt               DateTime       @updatedAt
-    updatedBy               String?        @db.VarChar(255)
+    createdAt               DateTime      @default(now())
+    createdBy               String?       @db.VarChar(255)
+    updatedAt               DateTime      @updatedAt
+    updatedBy               String?       @db.VarChar(255)
+
 }
 
-model Nutrition {
-    Fruits_id                Int           @id @default(autoincrement())
-    carbohydrates            Decimal
-    protein                  Decimal
-    fath                     Decimal
-    calories                 Decimal
-    sugar                    Decimal
-}
+// model Nutrition {
+//     Fruits_id                Int           @id @default(autoincrement())
+//     carbohydrates            Decimal       @db.Decimal(5,2)
+//     protein                  Decimal       @db.Decimal(5,2)
+//     fath                     Decimal       @db.Decimal(5,2)
+//     calories                 Decimal       @db.Decimal(5,2)
+//     sugar                    Decimal       @db.Decimal(5,2)
+// }
