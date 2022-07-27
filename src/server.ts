@@ -9,78 +9,31 @@ import {
     FruitData,
 } from "./lib/validation";
 
+import { initMulterMiddleware } from "./lib/middleware/multer";
+
+import generalRouter from "./routes/index";
+
+const upload = initMulterMiddleware();
+
+import cors from "cors";
+
 const prisma = new PrismaClient();
+
+const corsOptions = {
+    origin: "http://localhost:8080",
+};
+
+const port = process.env.PORT;
+
 const app = express();
 
 app.use(express.json());
 
-const port = process.env.PORT;
-
-app.get("/fruits", async (req, res) => {
-    const fruits = await prisma.fruits.findMany();
-
-    res.json(fruits);
-});
-
-app.get("/fruits/:id(\\d+)", async (req, res, next) => {
-    const fruitId = Number(req.params.id);
-
-    const fruit = await prisma.fruits.findUnique({
-        where: { id: fruitId },
-    });
-
-    if (!fruit) {
-        res.status(404);
-        return next(`Cannot GET /fruits/${fruitId}`);
-    }
-
-    res.json(fruit);
-});
-
-app.post("/fruits", validate({ body: fruitSchema }), async (req, res) => {
-    const fruitData: FruitData = req.body;
-
-    const fruit = await prisma.fruits.create({
-        //@ts-ignore
-        data: fruitData,
-    });
-
-    res.status(201).json(fruit);
-});
-
-app.put(
-    "/fruits/:id(\\d+)",
-    validate({ body: fruitSchema }),
-    async (request, response, next) => {
-        const fruitId = Number(request.params.id);
-        const FruitData: FruitData = request.body;
-        try {
-            const fruit = await prisma.fruits.update({
-                where: { id: fruitId },
-                data: FruitData,
-            });
-            response.status(200).json(fruit);
-        } catch (error) {
-            response.status(404);
-            next(`Cannot PUT /fruits/${fruitId}`);
-        }
-    }
-);
-
-app.delete("/fruits/:id(\\d+)", async (request, response, next) => {
-    const fruitId = Number(request.params.id);
-    try {
-        await prisma.fruits.delete({
-            where: { id: fruitId },
-        });
-        response.status(204).end();
-    } catch (error) {
-        response.status(404);
-        next(`Cannot DELETE /fruits/${fruitId}`);
-    }
-});
+app.use(cors(corsOptions));
 
 app.use(ValidationErrorMiddleware);
+
+app.use(generalRouter);
 
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
